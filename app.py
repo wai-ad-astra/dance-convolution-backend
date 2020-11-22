@@ -2,6 +2,7 @@
 from flask import Flask, request, jsonify,json
 from flask_cors import CORS
 import numpy as np
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -13,11 +14,27 @@ N_SAMPLES = 100
 GESTURES = {'loop', 'branch'}
 DIMS = 2
 samples_dict = {}
-a = []
+MODE = "DEV"  # or "PROD"
+DUMMY_DATA = './data.txt'
 
 # Create a new empty numpy array for each gesture
 for gesture in GESTURES:
     samples_dict[gesture] = np.zeros([N_SAMPLES, FRAMES, BODY_PARTS, DIMS])
+
+data = []
+
+# load dummy data if in development mode
+# todo: reference https://stackoverflow.com/questions/41068942/fastest-way-to-parse-json-strings-into-numpy-arrays
+if MODE == "DEV":
+    with open(DUMMY_DATA) as f:
+        # todo: learn dump vs dumps, loads vs load https://docs.python.org/3/library/json.html
+        data_dict = json.load(f)
+        # array = data_dict['samples']
+        array = json.loads(data_dict)
+        array = array['samples']
+        print(type(array))
+        # array = np.array(data_dict['samples'])
+        # print(array.shape)
 
 
 def processdata(data):
@@ -54,11 +71,8 @@ def processdata(data):
 #Somehow during training we need to link labels to gestures
 @app.route('/api/train')
 def train_model():
-
     #We're going to want to save the model somewhere
     #model.save()
-    #
-
 
     return 'heya'
 
@@ -69,20 +83,16 @@ def root_handler():
 
 @app.route('/api/get_model', methods=['GET'])
 def get_model():
-
-
     return 'server up!'
 
 
 @app.route('/post/data', methods=['POST'])
 def post_data():
-    data = json.dumps(request.get_json())
-    print('post data request')
+    training_data = request.get_json()
 
-    samps = data['samples']
-    
-    print(samps + " sdasd")
-    processdata(samps)
+    with open('data.txt', 'w') as outfile:
+        json.dump(training_data, outfile)
+
     return jsonify({'msg': 'data transferred!'})
 
 # whether or not called directly
