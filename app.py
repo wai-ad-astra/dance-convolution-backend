@@ -98,17 +98,18 @@ def preprocess(mode='verbose'):
                     n_valid = len(nonempty_frames)
                     if mode == 'verbose':
                         print(f'{i+1}: sample has {len(sample)} frames {n_valid} are nonempty = {n_valid/len(sample):.0%}')
-                    combined_samples[gesture].append(nonempty_frames)
                     frame_counts[len(nonempty_frames)] += 1
+                    # combined_samples[gesture].append(nonempty_frames)
+
+                    # convert to numpy array, taking middle 35 frames
+                    MARGIN = (len(nonempty_frames) - N_MIDDLE_FRAMES) // 2
+                    middle_frames = sample[MARGIN: MARGIN + 35]
+                    np.append(sample_array[gesture], np.array(middle_frames))
 
         print(f'frame count distribution: {sorted(frame_counts.items())}')
-        # convert to numpy array, taking middle 35 frames
-        # todo: replace with assignment operator if latest python supported
-        for name, sample in combined_samples.items():
-            MARGIN = (len(sample) - N_MIDDLE_FRAMES) // 2
-            sample_middle = sample[MARGIN: MARGIN + 35]
 
-            np.append(sample_array[gesture], sample_middle)
+        # for name, sample in combined_samples.items():
+
         print(*[(name, samples.shape) for name, samples in sample_array.items()], sep='\n')
 
 if MODE == 'PREPROCESS':
