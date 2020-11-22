@@ -1,6 +1,8 @@
 n_timesteps= 50
 n_features = 2
 n_outputs = 2
+import json
+import numpy as np
 
 import tensorflow as tf
 from tensorflow import keras

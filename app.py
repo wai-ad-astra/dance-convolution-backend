@@ -15,8 +15,8 @@ N_SAMPLES = 100
 GESTURES = {'loop', 'branch'}
 DIMS = 2
 samples_dict = {}
-MODE = "PROD"  # "DEV" or "PROD"
-DUMMY_DATA = './data.txt'
+MODE = "DEV"  # "DEV" or "PROD"
+DUMMY_DATA = './data/branch2.txt'
 
 # Create a new empty numpy array for each gesture
 for gesture in GESTURES:
@@ -44,7 +44,10 @@ if MODE == "DEV":
         # todo: learn dump vs dumps, loads vs load https://docs.python.org/3/library/json.html
         # array = np.array(json.load(f))
         array = json.load(f)
-        print(array[0])
+
+        for i, sample in enumerate(array):
+            array[i] = list(filter(None, sample))
+        #print(type(array))
         # row = array[1]
         # print(row)
         # print(array.shape)
@@ -52,6 +55,8 @@ if MODE == "DEV":
         print(run_stats(array))
         print(np.array(array).shape)
         print(set(len(r) for r in array))
+
+        
 
 
 def processdata(data):
