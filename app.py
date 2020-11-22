@@ -1,5 +1,5 @@
 """Import"""
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,json
 from flask_cors import CORS
 import numpy as np
 
@@ -13,11 +13,25 @@ N_SAMPLES = 100
 GESTURES = {'loop', 'branch'}
 DIMS = 2
 samples_dict = {}
+a = []
 
 # Create a new empty numpy array for each gesture
 for gesture in GESTURES:
     samples_dict[gesture] = np.zeros([N_SAMPLES, FRAMES, BODY_PARTS, DIMS])
 
+
+def processdata(data):
+    xcoord = []
+    ycoord = []
+
+    for x in data:
+        if x != {}:
+            xcoord.append(x[0][0])
+            print(x[0][0])
+            ycoord.append(x[0][1])
+
+    print(xcoord)
+    print(ycoord)
 
 #We will process the data by reshaping it
 ##@app.route('/api/process')
@@ -53,12 +67,22 @@ def train_model():
 def root_handler():
     return 'server up!'
 
+@app.route('/api/get_model', methods=['GET'])
+def get_model():
+
+
+    return 'server up!'
+
 
 @app.route('/post/data', methods=['POST'])
 def post_data():
-    data = request.get_json()
+    data = json.dumps(request.get_json())
     print('post data request')
-    print(data)
+
+    samps = data['samples']
+    
+    print(samps + " sdasd")
+    processdata(samps)
     return jsonify({'msg': 'data transferred!'})
 
 # whether or not called directly
