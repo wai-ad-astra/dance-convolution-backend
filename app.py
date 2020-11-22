@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify,json
 from flask_cors import CORS
 import numpy as np
 import json
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -14,7 +15,7 @@ N_SAMPLES = 100
 GESTURES = {'loop', 'branch'}
 DIMS = 2
 samples_dict = {}
-MODE = "DEV"  # "DEV" or "PROD"
+MODE = "PROD"  # "DEV" or "PROD"
 DUMMY_DATA = './data.txt'
 
 # Create a new empty numpy array for each gesture
@@ -22,7 +23,6 @@ for gesture in GESTURES:
     samples_dict[gesture] = np.zeros([N_SAMPLES, FRAMES, BODY_PARTS, DIMS])
 
 data = []
-
 
 def run_stats(array):
     total = 0
@@ -48,8 +48,10 @@ if MODE == "DEV":
         # row = array[1]
         # print(row)
         # print(array.shape)
+        print(len(array), len(array[0]), len(array[0][0]), len(array[0][0][0]))
         print(run_stats(array))
-
+        print(np.array(array).shape)
+        print(set(len(r) for r in array))
 
 
 def processdata(data):
@@ -105,8 +107,17 @@ def get_model():
 @app.route('/post/data', methods=['POST'])
 def post_data():
     training_data = request.get_json()['samples']
-    with open('data.txt', 'w') as outfile:
+    gesture = request.get_json()['gesture']
+
+    files = os.listdir('./data/')
+    i = 1
+    while f'{gesture}{i}.txt' in files:
+        i += 1
+
+    with open(f'./data/{gesture}{i}.txt', 'w') as outfile:
         json.dump(training_data, outfile)
+        name = f'{gesture}{i}.txt'
+        print(f'wrote data to {name}')
 
     return jsonify({'msg': 'data transferred!'})
 
