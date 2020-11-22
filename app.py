@@ -14,7 +14,7 @@ N_SAMPLES = 100
 GESTURES = {'loop', 'branch'}
 DIMS = 2
 samples_dict = {}
-MODE = "PROD"  # "DEV" or "PROD"
+MODE = "DEV"  # "DEV" or "PROD"
 DUMMY_DATA = './data.txt'
 
 # Create a new empty numpy array for each gesture
@@ -23,18 +23,33 @@ for gesture in GESTURES:
 
 data = []
 
+
+def run_stats(array):
+    total = 0
+    empty = 0
+    for seq in array:
+        for frame in seq:
+            if frame:
+                total += 1
+            else:
+                empty += 1
+            # for coord in frame:
+
+    return empty, total
+
 # load dummy data if in development mode
 # todo: reference https://stackoverflow.com/questions/41068942/fastest-way-to-parse-json-strings-into-numpy-arrays
 if MODE == "DEV":
     with open(DUMMY_DATA) as f:
         # todo: learn dump vs dumps, loads vs load https://docs.python.org/3/library/json.html
-        data_dict = json.load(f)
-        # array = data_dict['samples']
-        array = json.loads(data_dict)
-        array = array['samples']
-        print(type(array))
-        # array = np.array(data_dict['samples'])
+        # array = np.array(json.load(f))
+        array = json.load(f)
+        print(array[0])
+        # row = array[1]
+        # print(row)
         # print(array.shape)
+        print(run_stats(array))
+
 
 
 def processdata(data):
