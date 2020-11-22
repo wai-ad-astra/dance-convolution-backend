@@ -14,7 +14,7 @@ N_SAMPLES = 100
 GESTURES = {'loop', 'branch'}
 DIMS = 2
 samples_dict = {}
-MODE = "DEV"  # or "PROD"
+MODE = "PROD"  # "DEV" or "PROD"
 DUMMY_DATA = './data.txt'
 
 # Create a new empty numpy array for each gesture
@@ -81,6 +81,7 @@ def train_model():
 def root_handler():
     return 'server up!'
 
+
 @app.route('/api/get_model', methods=['GET'])
 def get_model():
     return 'server up!'
@@ -88,8 +89,7 @@ def get_model():
 
 @app.route('/post/data', methods=['POST'])
 def post_data():
-    training_data = request.get_json()
-
+    training_data = request.get_json()['samples']
     with open('data.txt', 'w') as outfile:
         json.dump(training_data, outfile)
 
