@@ -1,17 +1,22 @@
-from flask import Flask
+"""Import"""
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import numpy as np
-app = Flask(__name__)
 
+app = Flask(__name__)
+CORS(app)
+
+"""Constants"""
 FRAMES = 16
 BODY_PARTS = 17
 N_SAMPLES = 100
-GESTURES = set('loop','branch')
+GESTURES = {'loop', 'branch'}
 DIMS = 2
 samples_dict = {}
 
-#Create a new empty numpy array for each gesture
+# Create a new empty numpy array for each gesture
 for gesture in GESTURES:
-    samples_dict[gesture] = np.zeros([N_SAMPLES,FRAMES,BODY_PARTS,DIMS])
+    samples_dict[gesture] = np.zeros([N_SAMPLES, FRAMES, BODY_PARTS, DIMS])
 
 
 #We will process the data by reshaping it
@@ -43,6 +48,18 @@ def train_model():
 
     return 'heya'
 
+
+@app.route('/')
+def root_handler():
+    return 'server up!'
+
+
+@app.route('/post/data', methods=['POST'])
+def post_data():
+    data = request.get_json()
+    print('post data request')
+    print(data)
+    return jsonify({'msg': 'data transferred!'})
 
 # whether or not called directly
 if __name__ == '__main__':
